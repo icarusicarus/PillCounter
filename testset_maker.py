@@ -1,4 +1,5 @@
 import os
+import keyboard
 # import time
 from time import sleep
 from picamera import PiCamera
@@ -9,22 +10,25 @@ camera = PiCamera()
 # def setup_mortor():
 
 def p1():
-    cut_num = 50
+    cut_num = 10
     dir_name = "./P1"
     if os.path.isdir(dir_name) == False:
         os.mkdir(dir_name)
 
     pill = input("Enter the number of pills: ")
-    zpill = pill.zfill(3) + "_"
+    zpill = str(pill).zfill(3) + "_"
     count = 0
     while count < cut_num:
-        shutter = input("Press any key to take a picture.(If you want to terminate, press q)")
-        if shutter == 'q':
+        print("Press 's' to take a picture.\nIf you want to terminate, press 'q')")
+        if keyboard.read_key() == 'q':
             break
-        file_name = "P1_" + zpill + str(count+1).zfill(2) + ".jpg"
-        camera.capture(dir_name + "/" + file_name)
-        print("[O] " + file_name)
-        count += 1
+        elif keyboard.read_key() == 's':
+            file_name = "P1_" + zpill + str(count+1).zfill(2) + ".jpg"
+            camera.capture(dir_name + "/" + file_name)
+            print("[O] " + file_name)
+            count += 1
+        else:
+            print("Wrong key :(")
     
 
 def s2():
