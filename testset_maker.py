@@ -10,7 +10,7 @@ camera = PiCamera()
 # def setup_mortor():
 
 def p1():
-    cut_num = 10
+    cut_num = 50
     dir_name = "./P1"
     if os.path.isdir(dir_name) == False:
         os.mkdir(dir_name)
@@ -31,10 +31,17 @@ def p1():
             print("Wrong key :(")
     
 
-def s2():
+def s1():
     # setup_mortor()
-    camera.capture('bar.jpg')
+    cut_num = 10
+    dir_name = "./S1"
+    if os.path.isdir(dir_name) == False:
+        os.mkdir(dir_name)
+
+    pill = input("Enter the number of pills: ")
+    zpill = str(pill).zfill(3) + "_"
+    count = 0
 
 if __name__ == "__main__":
     p1()
-    # s2()
+    # s1()
