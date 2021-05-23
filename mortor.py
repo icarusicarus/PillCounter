@@ -1,12 +1,12 @@
 import time
 import RPi.GPIO as GPIO
 
-GPIO.setmode(GPIO.BCM)
-StepPins = [12, 16, 20, 21]
+GPIO.setmode(GPIO.BOARD)
+StepPins = [7, 11, 13, 15]
 
 for pin in StepPins:
     GPIO.setup(pin, GPIO.OUT)
-    GPIO.output(pin, False)
+    GPIO.output(pin, 0)
 
 StepCounter = 0
 
@@ -22,9 +22,9 @@ try:
         for pin in range(0, 4):
             xpin = StepPins[pin]
             if Seq[StepCounter][pin] != 0:
-                GPIO.ouyput(xpin, True)
+                GPIO.output(xpin, True)
             else:
-                GPIO.ouyput(xpin, False)
+                GPIO.output(xpin, False)
         
         StepCounter = 1
 
@@ -36,4 +36,4 @@ try:
         
         time.sleep(0.01)
 except KeyboardInterrupt:
-    GPIO.clenup()
+    GPIO.cleanup()
