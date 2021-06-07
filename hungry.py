@@ -2,6 +2,7 @@ import cv2
 import os
 import numpy as np
 from matplotlib import pyplot as plt
+from matplotlib.patches import ConnectionPatch
 from collections import Counter
 from scipy.optimize import linear_sum_assignment
 import math
@@ -9,6 +10,8 @@ import math
 count = []
 mode = 0
 infine = [9999, 9999]
+
+images = []
 
 
 def import_pillGroup(pillnum, groupnum):
@@ -26,6 +29,7 @@ def import_pillGroup(pillnum, groupnum):
 def detect_pill(img):
     img = "S3/" + img
     img = cv2.imread(img, 0)
+
     img = img[115:760, 50:980].copy()
     img = cv2.medianBlur(img, 3)
 
@@ -45,6 +49,7 @@ def detect_pill(img):
         points.append([i[0], i[1]])
 
     count.append(len(points))
+    images.append(dst)
 
     return points
 
@@ -59,11 +64,11 @@ def get_dist(ord_list):
         before = ord_list[i]
         after = ord_list[i + 1]
 
-        print("==================================")
-        print(before)
-        print("==================================")
-        print(after)
-        print("==================================")
+        # print("==================================")
+        # print(before)
+        # print("==================================")
+        # print(after)
+        # print("==================================")
 
         dst_list = []
 
@@ -74,8 +79,8 @@ def get_dist(ord_list):
                 q = after[k]
                 dst.append(int(math.dist(p, q)))
             dst_list.append(dst)
-        print(dst_list)
-        print(np.array(dst_list).shape)
+        # print(dst_list)
+        # print(np.array(dst_list).shape)
         row_ind, col_ind = linear_sum_assignment(dst_list)
         rows.append(row_ind)
         cols.append(col_ind)
@@ -84,7 +89,7 @@ def get_dist(ord_list):
 
 
 if __name__ == "__main__":
-    img_list = import_pillGroup(64, 1)
+    img_list = import_pillGroup(16, 3)
     # print(img_list)
     # print("=============================")
 
@@ -105,11 +110,39 @@ if __name__ == "__main__":
             # print(ord)
             # print(len(ord))
 
+    print(ord_list)
     # print(np.array(ord_list).shape)
-    # print("=============================")
+    print("=============================")
 
     rows, cols = get_dist(ord_list)
     print("=============================")
     print(rows)
     print("=============================")
     print(cols)
+
+    fig = plt.figure(figsize=(10, 5))
+    ax1 = fig.add_subplot(1, 10, 1)
+    plt.imshow(images[0], "gray")
+
+    for i in range(len(ord_list) - 1):
+        ax2 = fig.add_subplot(1, 10, i + 2)
+        plt.imshow(images[i + 1], "gray")
+
+        for j in range(len(cols[i])):
+            xyA = (ord_list[i][j][0], ord_list[i][j][1])
+            xyB = (ord_list[i][cols[i][j]][0], ord_list[i][cols[i][j]][1])
+            if xyA == (9999, 9999) or xyB == (9999, 999):
+                pass
+            con = ConnectionPatch(
+                xyA=xyA,
+                xyB=xyB,
+                coordsA="data",
+                coordsB="data",
+                axesA=ax2,
+                axesB=ax1,
+                color=((i * 15) / 255, 0, 0),
+            )
+            ax2.add_artist(con)
+        ax1 = ax2
+    # plt.show()
+    plt.savefig("pills.png", dpi=500)
