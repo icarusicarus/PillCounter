@@ -6,6 +6,7 @@ from matplotlib.patches import ConnectionPatch
 from collections import Counter
 from scipy.optimize import linear_sum_assignment
 import math
+from collections import Counter
 
 count = []
 mode = 0
@@ -89,7 +90,7 @@ def get_dist(ord_list):
 
 
 if __name__ == "__main__":
-    img_list = import_pillGroup(16, 3)
+    img_list = import_pillGroup(64, 3)
     # print(img_list)
     # print("=============================")
 
@@ -101,6 +102,10 @@ if __name__ == "__main__":
         ord_list.append(ord)
         len_list.append(len(ord))
 
+    print(len_list)
+    cnt = Counter(len_list)
+    max_pill = cnt.most_common()
+    print(max_pill[0][0])
     max_len = max(len_list)
     for ord in ord_list:
         diff = max_len - len(ord)
@@ -110,28 +115,32 @@ if __name__ == "__main__":
             # print(ord)
             # print(len(ord))
 
-    print(ord_list)
+    # print(ord_list)
     # print(np.array(ord_list).shape)
-    print("=============================")
+    # print("=============================")
 
     rows, cols = get_dist(ord_list)
-    print("=============================")
-    print(rows)
-    print("=============================")
-    print(cols)
+    # print("=============================")
+    # print(rows)
+    # print("=============================")
+    # print(cols)
 
     fig = plt.figure(figsize=(10, 5))
-    ax1 = fig.add_subplot(1, 10, 1)
+    ax1 = fig.add_subplot(1, 5, 1)
     plt.imshow(images[0], "gray")
 
     for i in range(len(ord_list) - 1):
-        ax2 = fig.add_subplot(1, 10, i + 2)
-        plt.imshow(images[i + 1], "gray")
+        if i < 4:
+            ax2 = fig.add_subplot(1, 5, i + 2)
+            plt.imshow(images[i + 1], "gray")
+        else:
+            ax2 = fig.add_subplot(2, 5, 10 - (i - 4))
+            plt.imshow(images[i + 1], "gray")
 
         for j in range(len(cols[i])):
             xyA = (ord_list[i][j][0], ord_list[i][j][1])
-            xyB = (ord_list[i][cols[i][j]][0], ord_list[i][cols[i][j]][1])
-            if xyA == (9999, 9999) or xyB == (9999, 999):
+            xyB = (ord_list[i + 1][cols[i][j]][0], ord_list[i + 1][cols[i][j]][1])
+            if xyA == (9999, 9999) or xyB == (9999, 9999):
                 pass
             con = ConnectionPatch(
                 xyA=xyA,
@@ -145,4 +154,5 @@ if __name__ == "__main__":
             ax2.add_artist(con)
         ax1 = ax2
     # plt.show()
+    plt.text(0.5, 0.5, "num(Pills): " + str(max_pill[0][0]))
     plt.savefig("pills.png", dpi=500)
